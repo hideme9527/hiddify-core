@@ -12,7 +12,7 @@ on:
         type: string
         default: "dev"
 env:
-    REGISTRY_IMAGE: ghcr.io/hiddify/hiddify-core
+    REGISTRY_IMAGE: ghcr.io/hideme9527/hiddify-core
 
 
 jobs:
