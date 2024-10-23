@@ -723,18 +723,35 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 		})
 
 	}
-	options.Route = &option.RouteOptions{
-		Rules:               routeRules,
-		Final:               OutboundMainProxyTag,
-		AutoDetectInterface: true,
-		OverrideAndroidVPN:  true,
-		RuleSet:             rulesets,
-		// GeoIP: &option.GeoIPOptions{
-		// 	Path: opt.GeoIPPath,
-		// },
-		// Geosite: &option.GeositeOptions{
-		// 	Path: opt.GeoSitePath,
-		// },
+
+	if opt.Mode == "smart" {
+		options.Route = &option.RouteOptions{
+			Rules:               routeRules,
+			Final:               OutboundDirectTag,
+			AutoDetectInterface: true,
+			OverrideAndroidVPN:  true,
+			RuleSet:             rulesets,
+			// GeoIP: &option.GeoIPOptions{
+			// 	Path: opt.GeoIPPath,
+			// },
+			// Geosite: &option.GeositeOptions{
+			// 	Path: opt.GeoSitePath,
+			// },
+		}
+	} else {
+		options.Route = &option.RouteOptions{
+			Rules:               routeRules,
+			Final:               OutboundMainProxyTag,
+			AutoDetectInterface: true,
+			OverrideAndroidVPN:  true,
+			RuleSet:             rulesets,
+			// GeoIP: &option.GeoIPOptions{
+			// 	Path: opt.GeoIPPath,
+			// },
+			// Geosite: &option.GeositeOptions{
+			// 	Path: opt.GeoSitePath,
+			// },
+		}
 	}
 	if opt.EnableDNSRouting {
 		for _, dnsRule := range dnsRules {
