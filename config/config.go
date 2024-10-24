@@ -400,6 +400,7 @@ func setDns(options *option.Options, opt *HiddifyOptions) {
 				Address:         opt.RemoteDnsAddress,
 				AddressResolver: DNSDirectTag,
 				Strategy:        opt.RemoteDnsDomainStrategy,
+				Detour:          OutboundMainProxyTag,
 			},
 			{
 				Tag:     DNSTricksDirectTag,
@@ -477,7 +478,7 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 
 				DefaultOptions: option.DefaultRule{
 					Inbound:     []string{InboundTUNTag},
-					PackageName: []string{"app.hiddify.com"},
+					PackageName: []string{"com.surflare"},
 					Outbound:    OutboundBypassTag,
 				},
 			},
@@ -672,57 +673,57 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 		})
 
 	}
-	if opt.Region != "other" {
-		dnsRules = append(dnsRules, option.DefaultDNSRule{
-			DomainSuffix: []string{"." + opt.Region},
-			Server:       DNSDirectTag,
-		})
-		routeRules = append(routeRules, option.Rule{
-			Type: C.RuleTypeDefault,
-			DefaultOptions: option.DefaultRule{
-				DomainSuffix: []string{"." + opt.Region},
-				Outbound:     OutboundDirectTag,
-			},
-		})
-		dnsRules = append(dnsRules, option.DefaultDNSRule{
-			RuleSet: []string{
-				"geoip-" + opt.Region,
-				"geosite-" + opt.Region,
-			},
-			Server: DNSDirectTag,
-		})
-
-		rulesets = append(rulesets, option.RuleSet{
-			Type:   C.RuleSetTypeRemote,
-			Tag:    "geoip-" + opt.Region,
-			Format: C.RuleSetFormatBinary,
-			RemoteOptions: option.RemoteRuleSet{
-				URL:            "https://raw.githubusercontent.com/hiddify/hiddify-geo/rule-set/country/geoip-" + opt.Region + ".srs",
-				UpdateInterval: option.Duration(5 * time.Hour * 24),
-			},
-		})
-		rulesets = append(rulesets, option.RuleSet{
-			Type:   C.RuleSetTypeRemote,
-			Tag:    "geosite-" + opt.Region,
-			Format: C.RuleSetFormatBinary,
-			RemoteOptions: option.RemoteRuleSet{
-				URL:            "https://raw.githubusercontent.com/hiddify/hiddify-geo/rule-set/country/geosite-" + opt.Region + ".srs",
-				UpdateInterval: option.Duration(5 * time.Hour * 24),
-			},
-		})
-
-		routeRules = append(routeRules, option.Rule{
-			Type: C.RuleTypeDefault,
-			DefaultOptions: option.DefaultRule{
-				RuleSet: []string{
-					"geoip-" + opt.Region,
-					"geosite-" + opt.Region,
-				},
-				Outbound: OutboundDirectTag,
-			},
-		})
-
-	}
+	//if opt.Region != "other" {
+	//	dnsRules = append(dnsRules, option.DefaultDNSRule{
+	//		DomainSuffix: []string{"." + opt.Region},
+	//		Server:       DNSDirectTag,
+	//	})
+	//	routeRules = append(routeRules, option.Rule{
+	//		Type: C.RuleTypeDefault,
+	//		DefaultOptions: option.DefaultRule{
+	//			DomainSuffix: []string{"." + opt.Region},
+	//			Outbound:     OutboundDirectTag,
+	//		},
+	//	})
+	//	dnsRules = append(dnsRules, option.DefaultDNSRule{
+	//		RuleSet: []string{
+	//			"geoip-" + opt.Region,
+	//			"geosite-" + opt.Region,
+	//		},
+	//		Server: DNSDirectTag,
+	//	})
+	//
+	//	rulesets = append(rulesets, option.RuleSet{
+	//		Type:   C.RuleSetTypeRemote,
+	//		Tag:    "geoip-" + opt.Region,
+	//		Format: C.RuleSetFormatBinary,
+	//		RemoteOptions: option.RemoteRuleSet{
+	//			URL:            "https://raw.githubusercontent.com/hiddify/hiddify-geo/rule-set/country/geoip-" + opt.Region + ".srs",
+	//			UpdateInterval: option.Duration(5 * time.Hour * 24),
+	//		},
+	//	})
+	//	rulesets = append(rulesets, option.RuleSet{
+	//		Type:   C.RuleSetTypeRemote,
+	//		Tag:    "geosite-" + opt.Region,
+	//		Format: C.RuleSetFormatBinary,
+	//		RemoteOptions: option.RemoteRuleSet{
+	//			URL:            "https://raw.githubusercontent.com/hiddify/hiddify-geo/rule-set/country/geosite-" + opt.Region + ".srs",
+	//			UpdateInterval: option.Duration(5 * time.Hour * 24),
+	//		},
+	//	})
+	//
+	//	routeRules = append(routeRules, option.Rule{
+	//		Type: C.RuleTypeDefault,
+	//		DefaultOptions: option.DefaultRule{
+	//			RuleSet: []string{
+	//				"geoip-" + opt.Region,
+	//				"geosite-" + opt.Region,
+	//			},
+	//			Outbound: OutboundDirectTag,
+	//		},
+	//	})
+	//
+	//}
 
 	if opt.Mode == "smart" {
 		options.Route = &option.RouteOptions{
