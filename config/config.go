@@ -396,7 +396,7 @@ func setDns(options *option.Options, opt *HiddifyOptions) {
 
 		Final: func() string {
 			if opt.Mode == "smart" {
-				return "direct"
+				return DNSDirectTag
 			} else {
 				return DNSRemoteTag
 			}
