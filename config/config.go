@@ -393,7 +393,14 @@ func setDns(options *option.Options, opt *HiddifyOptions) {
 		DNSClientOptions: option.DNSClientOptions{
 			IndependentCache: opt.IndependentDNSCache,
 		},
-		Final: DNSRemoteTag,
+
+		Final: func() string {
+			if opt.Mode == "smart" {
+				return "direct"
+			} else {
+				return DNSRemoteTag
+			}
+		}(),
 		Servers: []option.DNSServerOptions{
 			{
 				Tag:             DNSRemoteTag,
