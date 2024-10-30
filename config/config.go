@@ -394,13 +394,16 @@ func setDns(options *option.Options, opt *HiddifyOptions) {
 			IndependentCache: opt.IndependentDNSCache,
 		},
 		Rules: []option.DNSRule{
-			{DefaultOptions: option.DefaultDNSRule{
-				QueryType: []option.DNSQueryType{
-					option.DNSQueryType(65),
-					option.DNSQueryType(64),
+			{
+				Type: "default",
+				DefaultOptions: option.DefaultDNSRule{
+					QueryType: []option.DNSQueryType{
+						option.DNSQueryType(65),
+						option.DNSQueryType(64),
+					},
+					Server: DNSBlockTag,
 				},
-				Server: DNSBlockTag,
-			}},
+			},
 		},
 
 		Final: func() string {
