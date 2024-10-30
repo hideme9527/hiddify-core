@@ -395,8 +395,10 @@ func setDns(options *option.Options, opt *HiddifyOptions) {
 		},
 		Rules: append(options.DNS.Rules, option.DNSRule{
 			DefaultOptions: option.DefaultDNSRule{
-				QueryType: append([]option.DNSQueryType{}, option.DNSQueryType(65)),
-				Server:    DNSDirectTag,
+				QueryType: []option.DNSQueryType{
+					option.DNSQueryType(65),
+				},
+				Server: DNSDirectTag,
 			},
 		}),
 
