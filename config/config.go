@@ -393,6 +393,12 @@ func setDns(options *option.Options, opt *HiddifyOptions) {
 		DNSClientOptions: option.DNSClientOptions{
 			IndependentCache: opt.IndependentDNSCache,
 		},
+		Rules: append(options.DNS.Rules, option.DNSRule{
+			DefaultOptions: option.DefaultDNSRule{
+				QueryType: append([]option.DNSQueryType{}, option.DNSQueryType(65)),
+				Server:    DNSDirectTag,
+			},
+		}),
 
 		Final: func() string {
 			if opt.Mode == "smart" {
