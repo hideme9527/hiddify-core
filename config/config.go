@@ -393,19 +393,6 @@ func setDns(options *option.Options, opt *HiddifyOptions) {
 		DNSClientOptions: option.DNSClientOptions{
 			IndependentCache: opt.IndependentDNSCache,
 		},
-		Rules: []option.DNSRule{
-			{
-				Type: "default",
-				DefaultOptions: option.DefaultDNSRule{
-					QueryType: []option.DNSQueryType{
-						option.DNSQueryType(65),
-						option.DNSQueryType(64),
-					},
-					Server: DNSBlockTag,
-				},
-			},
-		},
-
 		Final: func() string {
 			if opt.Mode == "smart" {
 				return DNSDirectTag
@@ -497,7 +484,7 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 
 				DefaultOptions: option.DefaultRule{
 					Inbound:     []string{InboundTUNTag},
-					PackageName: []string{"com.surflare"},
+					PackageName: []string{"com.surflare.app"},
 					Outbound:    OutboundBypassTag,
 				},
 			},
@@ -520,6 +507,16 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 			Outbound: OutboundDNSTag,
 		},
 	})
+
+	routeRules = append(routeRules, option.Rule{
+		Type: C.RuleTypeDefault,
+		DefaultOptions: option.DefaultRule{
+			Inbound:  []string{InboundTUNTag},
+			Network:  []string{"udp"},
+			Outbound: OutboundBypassTag,
+		},
+	})
+
 	routeRules = append(routeRules, option.Rule{
 		Type: C.RuleTypeDefault,
 		DefaultOptions: option.DefaultRule{
