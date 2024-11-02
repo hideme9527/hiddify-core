@@ -325,7 +325,7 @@ func setInbound(options *option.Options, opt *HiddifyOptions) {
 		switch opt.IPv6Mode {
 		case option.DomainStrategy(dns.DomainStrategyUseIPv4):
 			tunInbound.TunOptions.Inet4Address = []netip.Prefix{
-				netip.MustParsePrefix("172.19.0.1/28"),
+				netip.MustParsePrefix("198.0.2.1/28"),
 			}
 		case option.DomainStrategy(dns.DomainStrategyUseIPv6):
 			tunInbound.TunOptions.Inet6Address = []netip.Prefix{
@@ -333,7 +333,7 @@ func setInbound(options *option.Options, opt *HiddifyOptions) {
 			}
 		default:
 			tunInbound.TunOptions.Inet4Address = []netip.Prefix{
-				netip.MustParsePrefix("172.19.0.1/28"),
+				netip.MustParsePrefix("198.0.2.1/28"),
 			}
 			tunInbound.TunOptions.Inet6Address = []netip.Prefix{
 				netip.MustParsePrefix("fdfe:dcba:9876::1/126"),
@@ -505,15 +505,6 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 		DefaultOptions: option.DefaultRule{
 			Inbound:  []string{InboundDNSTag},
 			Outbound: OutboundDNSTag,
-		},
-	})
-
-	routeRules = append(routeRules, option.Rule{
-		Type: C.RuleTypeDefault,
-		DefaultOptions: option.DefaultRule{
-			Inbound:  []string{InboundTUNTag},
-			Network:  []string{"udp"},
-			Outbound: OutboundBypassTag,
 		},
 	})
 
