@@ -472,9 +472,10 @@ func setFakeDns(options *option.Options, opt *HiddifyOptions) {
 }
 
 func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
-	dnsRules := []option.DefaultDNSRule{}
-	routeRules := []option.Rule{}
-	rulesets := []option.RuleSet{}
+	var dnsRules []option.DefaultDNSRule
+	var routeRules []option.Rule
+	var routeUdpRules []option.Rule
+	var rulesets []option.RuleSet
 
 	if opt.EnableTun && runtime.GOOS == "android" {
 		routeRules = append(
@@ -553,17 +554,37 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 		case "block":
 			routeRule.Outbound = OutboundBlockTag
 		case "proxy":
-			routeRule.Outbound = OutboundMainProxyTag
+			routeRule.Outbound = opt.Node
+			routeRule.Network = append(routeRule.Network, "tcp")
+			copiedRouteRule := routeRule
+			copiedRouteRule.Outbound = opt.Node + "-udp"
+			copiedRouteRule.Network = append(copiedRouteRule.Network, "udp")
+			routeUdpRules = append(routeUdpRules, option.Rule{
+				Type:           C.RuleTypeDefault,
+				DefaultOptions: copiedRouteRule,
+			})
 		}
 
 		if routeRule.IsValid() {
-			routeRules = append(
-				routeRules,
-				option.Rule{
-					Type:           C.RuleTypeDefault,
-					DefaultOptions: routeRule,
-				},
-			)
+			if rule.Outbound == "proxy" {
+				if opt.Mode == "smart" {
+					routeRules = append(
+						routeRules,
+						option.Rule{
+							Type:           C.RuleTypeDefault,
+							DefaultOptions: routeRule,
+						},
+					)
+				}
+			} else {
+				routeRules = append(
+					routeRules,
+					option.Rule{
+						Type:           C.RuleTypeDefault,
+						DefaultOptions: routeRule,
+					},
+				)
+			}
 		}
 
 		dnsRule := rule.MakeDNSRule()

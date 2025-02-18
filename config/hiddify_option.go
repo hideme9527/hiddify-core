@@ -14,6 +14,7 @@ type HiddifyOptions struct {
 	ClashApiSecret          string `json:"web-secret"`
 	Region                  string `json:"region"`
 	Mode                    string `json:"mode"`
+	Node                    string `json:"node"`
 	BlockAds                bool   `json:"block-ads"`
 	UseXrayCoreWhenPossible bool   `json:"use-xray-core-when-possible"`
 	// GeoIPPath        string      `json:"geoip-path"`
