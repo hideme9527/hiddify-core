@@ -603,6 +603,28 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 						},
 					)
 
+				} else {
+					routeRules = append(
+						routeRules,
+						option.Rule{
+							Type: C.RuleTypeDefault,
+							DefaultOptions: option.DefaultRule{
+								Network:  []string{"tcp"},
+								Outbound: opt.Node,
+							},
+						},
+					)
+					routeRules = append(
+						routeRules,
+						option.Rule{
+							Type: C.RuleTypeDefault,
+							DefaultOptions: option.DefaultRule{
+								Network:  []string{"udp"},
+								Outbound: opt.Node + "-udp",
+							},
+						},
+					)
+
 				}
 			} else {
 				routeRules = append(
