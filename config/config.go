@@ -31,6 +31,7 @@ const (
 	OutboundBlockTag          = "block"
 	OutboundSelectTag         = "select"
 	OutboundURLTestTag        = "auto"
+	OutboundURLTestUDPTag     = "auto-udp"
 	OutboundDNSTag            = "dns-out"
 	OutboundDirectFragmentTag = "direct-fragment"
 
@@ -130,6 +131,7 @@ func setOutbounds(options *option.Options, input *option.Options, opt *HiddifyOp
 	directDNSDomains := make(map[string]bool)
 	var outbounds []option.Outbound
 	var tags []string
+	var tagsUdp []string
 	OutboundMainProxyTag = OutboundSelectTag
 	// inbound==warp over proxies
 	// outbound==proxies over warp
@@ -186,7 +188,11 @@ func setOutbounds(options *option.Options, input *option.Options, opt *HiddifyOp
 			continue
 		default:
 			if !strings.Contains(out.Tag, "§hide§") {
-				tags = append(tags, out.Tag)
+				if strings.Contains(out.Tag, "-udp") {
+					tagsUdp = append(tagsUdp, out.Tag)
+				} else {
+					tags = append(tags, out.Tag)
+				}
 			}
 			out = patchHiddifyWarpFromConfig(out, *opt)
 			outbounds = append(outbounds, out)
@@ -206,6 +212,20 @@ func setOutbounds(options *option.Options, input *option.Options, opt *HiddifyOp
 			InterruptExistConnections: true,
 		},
 	}
+	urlTestUdp := option.Outbound{
+		Type: C.TypeURLTest,
+		Tag:  OutboundURLTestUDPTag,
+		URLTestOptions: option.URLTestOutboundOptions{
+			Outbounds: tagsUdp,
+			URL:       opt.ConnectionTestUrl,
+			Interval:  option.Duration(opt.URLTestInterval.Duration()),
+			// IdleTimeout: option.Duration(opt.URLTestIdleTimeout.Duration()),
+			Tolerance:                 1,
+			IdleTimeout:               option.Duration(opt.URLTestInterval.Duration().Nanoseconds() * 3),
+			InterruptExistConnections: true,
+		},
+	}
+
 	defaultSelect := urlTest.Tag
 
 	for _, tag := range tags {
@@ -223,7 +243,7 @@ func setOutbounds(options *option.Options, input *option.Options, opt *HiddifyOp
 		},
 	}
 
-	outbounds = append([]option.Outbound{selector, urlTest}, outbounds...)
+	outbounds = append([]option.Outbound{selector, urlTest, urlTestUdp}, outbounds...)
 
 	options.Outbounds = append(
 		outbounds,
@@ -548,6 +568,7 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 
 	for _, rule := range opt.Rules {
 		routeRule := rule.MakeRule()
+		copiedRouteRule := routeRule
 		switch rule.Outbound {
 		case "bypass":
 			routeRule.Outbound = OutboundBypassTag
@@ -556,7 +577,6 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 		case "proxy":
 			routeRule.Outbound = opt.Node
 			routeRule.Network = append(routeRule.Network, "tcp")
-			copiedRouteRule := routeRule
 			copiedRouteRule.Outbound = opt.Node + "-udp"
 			copiedRouteRule.Network = append(copiedRouteRule.Network, "udp")
 			routeUdpRules = append(routeUdpRules, option.Rule{
@@ -575,6 +595,14 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 							DefaultOptions: routeRule,
 						},
 					)
+					routeRules = append(
+						routeRules,
+						option.Rule{
+							Type:           C.RuleTypeDefault,
+							DefaultOptions: copiedRouteRule,
+						},
+					)
+
 				}
 			} else {
 				routeRules = append(
