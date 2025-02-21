@@ -6,16 +6,16 @@ on:
       - 'docs/**'
       - '.vscode/'
       - 'appcast.xml'
-  push:
-    branches:
-       - main
-       - dev
-       - android-fix-action-bug
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - '.vscode/'
-      - 'appcast.xml'
+#  push:
+#    branches:
+#       - main
+#       - dev
+#       - android-fix-action-bug
+#    paths-ignore:
+#      - '**.md'
+#      - 'docs/**'
+#      - '.vscode/'
+#      - 'appcast.xml'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}

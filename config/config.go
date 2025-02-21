@@ -565,7 +565,17 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 			},
 		)
 	}
-
+	routeRules = append(
+		routeRules,
+		option.Rule{
+			Type: C.RuleTypeDefault,
+			DefaultOptions: option.DefaultRule{
+				// GeoIP:    []string{"private"},
+				Inbound:  []string{InboundTUNTag},
+				Protocol: []string{"quic"},
+			},
+		},
+	)
 	for _, rule := range opt.Rules {
 		routeRule := rule.MakeRule()
 		copiedRouteRule := routeRule
