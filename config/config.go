@@ -536,7 +536,13 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 			Outbound: OutboundDNSTag,
 		},
 	})
-
+	//routeRules = append(routeRules, option.Rule{
+	//	Type: C.RuleTypeDefault,
+	//	DefaultOptions: option.DefaultRule{
+	//		Inbound:  []string{InboundTUNTag},
+	//		Protocol: []string{"quic"},
+	//	},
+	//})
 	// {
 	// 	Type: C.RuleTypeDefault,
 	// 	DefaultOptions: option.DefaultRule{
@@ -565,17 +571,7 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 			},
 		)
 	}
-	routeRules = append(
-		routeRules,
-		option.Rule{
-			Type: C.RuleTypeDefault,
-			DefaultOptions: option.DefaultRule{
-				// GeoIP:    []string{"private"},
-				Inbound:  []string{InboundTUNTag},
-				Protocol: []string{"quic"},
-			},
-		},
-	)
+
 	for _, rule := range opt.Rules {
 		routeRule := rule.MakeRule()
 		copiedRouteRule := routeRule
@@ -807,30 +803,31 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 		}
 	} else {
 
-		routeRules = append(
-			routeRules,
-			option.Rule{
-				Type: C.RuleTypeDefault,
-				DefaultOptions: option.DefaultRule{
-					Network:  []string{"tcp"},
-					Outbound: opt.Node,
-				},
-			},
-		)
-		routeRules = append(
-			routeRules,
-			option.Rule{
-				Type: C.RuleTypeDefault,
-				DefaultOptions: option.DefaultRule{
-					Network:  []string{"udp"},
-					Outbound: opt.Node + "-udp",
-				},
-			},
-		)
+		//routeRules = append(
+		//	routeRules,
+		//	option.Rule{
+		//		Type: C.RuleTypeDefault,
+		//		DefaultOptions: option.DefaultRule{
+		//			Network:  []string{"tcp"},
+		//			Outbound: opt.Node,
+		//		},
+		//	},
+		//)
+		//routeRules = append(
+		//	routeRules,
+		//	option.Rule{
+		//		Type: C.RuleTypeDefault,
+		//		DefaultOptions: option.DefaultRule{
+		//			Network:  []string{"udp"},
+		//			Outbound: opt.Node + "-udp",
+		//		},
+		//	},
+		//)
 
 		options.Route = &option.RouteOptions{
-			Rules:               routeRules,
-			Final:               OutboundMainProxyTag,
+			Rules: routeRules,
+			//Final:               OutboundMainProxyTag,
+			Final:               opt.Node + "-udp",
 			AutoDetectInterface: true,
 			OverrideAndroidVPN:  true,
 			RuleSet:             rulesets,
