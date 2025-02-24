@@ -536,13 +536,13 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 			Outbound: OutboundDNSTag,
 		},
 	})
-	//routeRules = append(routeRules, option.Rule{
-	//	Type: C.RuleTypeDefault,
-	//	DefaultOptions: option.DefaultRule{
-	//		Inbound:  []string{InboundTUNTag},
-	//		Protocol: []string{"quic"},
-	//	},
-	//})
+	routeRules = append(routeRules, option.Rule{
+		Type: C.RuleTypeDefault,
+		DefaultOptions: option.DefaultRule{
+			Protocol: []string{"quic"},
+			Outbound: OutboundBlockTag,
+		},
+	})
 	// {
 	// 	Type: C.RuleTypeDefault,
 	// 	DefaultOptions: option.DefaultRule{
