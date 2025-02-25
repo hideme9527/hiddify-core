@@ -539,7 +539,8 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 	routeRules = append(routeRules, option.Rule{
 		Type: C.RuleTypeDefault,
 		DefaultOptions: option.DefaultRule{
-			Protocol: []string{"quic"},
+			Network:  []string{"udp"},
+			Port:     []uint16{443},
 			Outbound: OutboundBlockTag,
 		},
 	})
