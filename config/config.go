@@ -604,6 +604,11 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 					},
 				},
 			)
+
+			dnsRules = append(dnsRules, option.DefaultDNSRule{
+				RuleSet: option.Listable[string]{"rule_set_proxy"},
+				Server:  DNSRemoteTag,
+			})
 		}
 
 		if len(opt.RejectPath) > 0 {
