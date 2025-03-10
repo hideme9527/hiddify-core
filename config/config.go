@@ -9,6 +9,7 @@ import (
 	"net"
 	"net/netip"
 	"net/url"
+	"os"
 	"runtime"
 	"strings"
 	"time"
@@ -572,6 +573,14 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 			},
 		)
 	}
+	data, err := os.ReadFile(opt.ProxyPath)
+	if err != nil {
+		fmt.Println("读取文件失败:", err)
+	} else {
+		// 通过字节数获取大小
+		fmt.Printf("文件大小: %d 字节\n", len(data))
+	}
+
 	if opt.Mode == "smart" {
 		if len(opt.ProxyPath) > 0 {
 			rulesets = append(rulesets, option.RuleSet{
