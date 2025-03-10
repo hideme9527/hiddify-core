@@ -572,6 +572,81 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 			},
 		)
 	}
+	if opt.Mode == "smart" {
+		if len(opt.ProxyPath) > 0 {
+			rulesets = append(rulesets, option.RuleSet{
+				Type:   C.RuleSetTypeLocal,
+				Tag:    "rule_set_proxy",
+				Format: C.RuleSetFormatBinary,
+				LocalOptions: option.LocalRuleSet{
+					Path: opt.ProxyPath,
+				},
+			})
+			routeRules = append(
+				routeRules,
+				option.Rule{
+					Type: C.RuleTypeDefault,
+					DefaultOptions: option.DefaultRule{
+						RuleSet:  option.Listable[string]{"rule_set_proxy"},
+						Network:  []string{"tcp"},
+						Outbound: opt.Node,
+					},
+				},
+			)
+			routeRules = append(
+				routeRules,
+				option.Rule{
+					Type: C.RuleTypeDefault,
+					DefaultOptions: option.DefaultRule{
+						RuleSet:  option.Listable[string]{"rule_set_proxy"},
+						Network:  []string{"udp"},
+						Outbound: opt.Node + "-udp",
+					},
+				},
+			)
+		}
+
+		if len(opt.RejectPath) > 0 {
+			rulesets = append(rulesets, option.RuleSet{
+				Type:   C.RuleSetTypeLocal,
+				Tag:    "rule_set_reject",
+				Format: C.RuleSetFormatBinary,
+				LocalOptions: option.LocalRuleSet{
+					Path: opt.RejectPath,
+				},
+			})
+			routeRules = append(
+				routeRules,
+				option.Rule{
+					Type: C.RuleTypeDefault,
+					DefaultOptions: option.DefaultRule{
+						RuleSet:  option.Listable[string]{"rule_set_reject"},
+						Outbound: OutboundBlockTag,
+					},
+				},
+			)
+		}
+		if len(opt.DirectPath) > 0 {
+			rulesets = append(rulesets, option.RuleSet{
+				Type:   C.RuleSetTypeLocal,
+				Tag:    "rule_set_direct",
+				Format: C.RuleSetFormatBinary,
+				LocalOptions: option.LocalRuleSet{
+					Path: opt.DirectPath,
+				},
+			})
+			routeRules = append(
+				routeRules,
+				option.Rule{
+					Type: C.RuleTypeDefault,
+					DefaultOptions: option.DefaultRule{
+						RuleSet:  option.Listable[string]{"rule_set_direct"},
+						Outbound: OutboundDirectTag,
+					},
+				},
+			)
+		}
+	}
 
 	for _, rule := range opt.Rules {
 		routeRule := rule.MakeRule()
