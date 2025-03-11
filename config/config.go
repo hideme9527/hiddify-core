@@ -9,7 +9,6 @@ import (
 	"net"
 	"net/netip"
 	"net/url"
-	"os"
 	"runtime"
 	"strings"
 	"time"
@@ -573,22 +572,16 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 			},
 		)
 	}
-	data, err := os.ReadFile(opt.ProxyPath)
-	if err != nil {
-		fmt.Println("读取文件失败:", err)
-	} else {
-		// 通过字节数获取大小
-		fmt.Printf("文件大小: %d 字节\n", len(data))
-	}
 
 	if opt.Mode == "smart" {
-		if len(opt.ProxyPath) > 0 {
+		if len(opt.ProxyRemote) > 0 {
 			rulesets = append(rulesets, option.RuleSet{
-				Type:   C.RuleSetTypeLocal,
-				Tag:    "rule_set_proxy",
+				Type:   C.RuleSetTypeRemote,
+				Tag:    "rule-set-proxy",
 				Format: C.RuleSetFormatBinary,
-				LocalOptions: option.LocalRuleSet{
-					Path: opt.ProxyPath,
+				RemoteOptions: option.RemoteRuleSet{
+					URL:            opt.ProxyRemote,
+					UpdateInterval: option.Duration(90 * time.Hour * 24),
 				},
 			})
 			routeRules = append(
@@ -596,7 +589,7 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 				option.Rule{
 					Type: C.RuleTypeDefault,
 					DefaultOptions: option.DefaultRule{
-						RuleSet:  option.Listable[string]{"rule_set_proxy"},
+						RuleSet:  option.Listable[string]{"rule-set-proxy"},
 						Network:  []string{"tcp"},
 						Outbound: opt.Node,
 					},
@@ -607,7 +600,7 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 				option.Rule{
 					Type: C.RuleTypeDefault,
 					DefaultOptions: option.DefaultRule{
-						RuleSet:  option.Listable[string]{"rule_set_proxy"},
+						RuleSet:  option.Listable[string]{"rule-set-proxy"},
 						Network:  []string{"udp"},
 						Outbound: opt.Node + "-udp",
 					},
@@ -615,18 +608,19 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 			)
 
 			dnsRules = append(dnsRules, option.DefaultDNSRule{
-				RuleSet: option.Listable[string]{"rule_set_proxy"},
+				RuleSet: option.Listable[string]{"rule-set-proxy"},
 				Server:  DNSRemoteTag,
 			})
 		}
 
-		if len(opt.RejectPath) > 0 {
+		if len(opt.RejectRemote) > 0 {
 			rulesets = append(rulesets, option.RuleSet{
-				Type:   C.RuleSetTypeLocal,
-				Tag:    "rule_set_reject",
+				Type:   C.RuleSetTypeRemote,
+				Tag:    "rule-set-reject",
 				Format: C.RuleSetFormatBinary,
-				LocalOptions: option.LocalRuleSet{
-					Path: opt.RejectPath,
+				RemoteOptions: option.RemoteRuleSet{
+					URL:            opt.RejectRemote,
+					UpdateInterval: option.Duration(90 * time.Hour * 24),
 				},
 			})
 			routeRules = append(
@@ -634,19 +628,20 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 				option.Rule{
 					Type: C.RuleTypeDefault,
 					DefaultOptions: option.DefaultRule{
-						RuleSet:  option.Listable[string]{"rule_set_reject"},
+						RuleSet:  option.Listable[string]{"rule-set-reject"},
 						Outbound: OutboundBlockTag,
 					},
 				},
 			)
 		}
-		if len(opt.DirectPath) > 0 {
+		if len(opt.DirectRemote) > 0 {
 			rulesets = append(rulesets, option.RuleSet{
-				Type:   C.RuleSetTypeLocal,
-				Tag:    "rule_set_direct",
+				Type:   C.RuleSetTypeRemote,
+				Tag:    "rule-set-direct",
 				Format: C.RuleSetFormatBinary,
-				LocalOptions: option.LocalRuleSet{
-					Path: opt.DirectPath,
+				RemoteOptions: option.RemoteRuleSet{
+					URL:            opt.DirectRemote,
+					UpdateInterval: option.Duration(90 * time.Hour * 24),
 				},
 			})
 			routeRules = append(
@@ -654,7 +649,7 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 				option.Rule{
 					Type: C.RuleTypeDefault,
 					DefaultOptions: option.DefaultRule{
-						RuleSet:  option.Listable[string]{"rule_set_direct"},
+						RuleSet:  option.Listable[string]{"rule-set-direct"},
 						Outbound: OutboundDirectTag,
 					},
 				},
