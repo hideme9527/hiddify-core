@@ -575,12 +575,13 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 
 	if opt.Mode == "smart" {
 		if len(opt.ProxyRemote) > 0 {
+			decodedURL, _ := url.QueryUnescape(opt.ProxyRemote)
 			rulesets = append(rulesets, option.RuleSet{
 				Type:   C.RuleSetTypeRemote,
 				Tag:    "rule-set-proxy",
 				Format: C.RuleSetFormatBinary,
 				RemoteOptions: option.RemoteRuleSet{
-					URL:            opt.ProxyRemote,
+					URL:            decodedURL,
 					UpdateInterval: option.Duration(90 * time.Hour * 24),
 				},
 			})
@@ -614,12 +615,13 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 		}
 
 		if len(opt.RejectRemote) > 0 {
+			decodedURL, _ := url.QueryUnescape(opt.RejectRemote)
 			rulesets = append(rulesets, option.RuleSet{
 				Type:   C.RuleSetTypeRemote,
 				Tag:    "rule-set-reject",
 				Format: C.RuleSetFormatBinary,
 				RemoteOptions: option.RemoteRuleSet{
-					URL:            opt.RejectRemote,
+					URL:            decodedURL,
 					UpdateInterval: option.Duration(90 * time.Hour * 24),
 				},
 			})
@@ -635,12 +637,13 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 			)
 		}
 		if len(opt.DirectRemote) > 0 {
+			decodedURL, _ := url.QueryUnescape(opt.DirectRemote)
 			rulesets = append(rulesets, option.RuleSet{
 				Type:   C.RuleSetTypeRemote,
 				Tag:    "rule-set-direct",
 				Format: C.RuleSetFormatBinary,
 				RemoteOptions: option.RemoteRuleSet{
-					URL:            opt.DirectRemote,
+					URL:            decodedURL,
 					UpdateInterval: option.Duration(90 * time.Hour * 24),
 				},
 			})
