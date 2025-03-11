@@ -583,6 +583,7 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 				RemoteOptions: option.RemoteRuleSet{
 					URL:            decodedURL,
 					UpdateInterval: option.Duration(90 * time.Hour * 24),
+					DownloadDetour: OutboundDirectTag,
 				},
 			})
 			routeRules = append(
@@ -623,6 +624,7 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 				RemoteOptions: option.RemoteRuleSet{
 					URL:            decodedURL,
 					UpdateInterval: option.Duration(90 * time.Hour * 24),
+					DownloadDetour: OutboundDirectTag,
 				},
 			})
 			routeRules = append(
@@ -645,6 +647,7 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 				RemoteOptions: option.RemoteRuleSet{
 					URL:            decodedURL,
 					UpdateInterval: option.Duration(90 * time.Hour * 24),
+					DownloadDetour: OutboundDirectTag,
 				},
 			})
 			routeRules = append(
