@@ -9,6 +9,7 @@ import (
 	"net"
 	"net/netip"
 	"net/url"
+	"os"
 	"runtime"
 	"strings"
 	"time"
@@ -574,17 +575,28 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 	}
 
 	if opt.Mode == "smart" {
-		if len(opt.ProxyRemote) > 0 {
-			decodedURL, _ := url.QueryUnescape(opt.ProxyRemote)
+		if len(opt.ProxyLocal) > 0 {
+			content, err := os.ReadFile(opt.ProxyLocal)
+			if err != nil {
+				fmt.Println("读取文件失败:", err)
+				return
+			}
+			// 转换为字符串并打印
+			fmt.Println("文件内容:\n" + string(content))
+
+			//decodedURL, _ := url.QueryUnescape(opt.ProxyRemote)
 			rulesets = append(rulesets, option.RuleSet{
 				Type:   C.RuleSetTypeRemote,
 				Tag:    "rule-set-proxy",
 				Format: C.RuleSetFormatBinary,
-				RemoteOptions: option.RemoteRuleSet{
-					URL:            decodedURL,
-					UpdateInterval: option.Duration(90 * time.Hour * 24),
-					DownloadDetour: OutboundDirectTag,
+				LocalOptions: option.LocalRuleSet{
+					Path: opt.ProxyLocal,
 				},
+				//RemoteOptions: option.RemoteRuleSet{
+				//	URL:            decodedURL,
+				//	UpdateInterval: option.Duration(10 * time.Hour * 24),
+				//	DownloadDetour: OutboundDirectTag,
+				//},
 			})
 			routeRules = append(
 				routeRules,
@@ -615,52 +627,6 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 			})
 		}
 
-		if len(opt.RejectRemote) > 0 {
-			decodedURL, _ := url.QueryUnescape(opt.RejectRemote)
-			rulesets = append(rulesets, option.RuleSet{
-				Type:   C.RuleSetTypeRemote,
-				Tag:    "rule-set-reject",
-				Format: C.RuleSetFormatBinary,
-				RemoteOptions: option.RemoteRuleSet{
-					URL:            decodedURL,
-					UpdateInterval: option.Duration(90 * time.Hour * 24),
-					DownloadDetour: OutboundDirectTag,
-				},
-			})
-			routeRules = append(
-				routeRules,
-				option.Rule{
-					Type: C.RuleTypeDefault,
-					DefaultOptions: option.DefaultRule{
-						RuleSet:  option.Listable[string]{"rule-set-reject"},
-						Outbound: OutboundBlockTag,
-					},
-				},
-			)
-		}
-		if len(opt.DirectRemote) > 0 {
-			decodedURL, _ := url.QueryUnescape(opt.DirectRemote)
-			rulesets = append(rulesets, option.RuleSet{
-				Type:   C.RuleSetTypeRemote,
-				Tag:    "rule-set-direct",
-				Format: C.RuleSetFormatBinary,
-				RemoteOptions: option.RemoteRuleSet{
-					URL:            decodedURL,
-					UpdateInterval: option.Duration(90 * time.Hour * 24),
-					DownloadDetour: OutboundDirectTag,
-				},
-			})
-			routeRules = append(
-				routeRules,
-				option.Rule{
-					Type: C.RuleTypeDefault,
-					DefaultOptions: option.DefaultRule{
-						RuleSet:  option.Listable[string]{"rule-set-direct"},
-						Outbound: OutboundDirectTag,
-					},
-				},
-			)
-		}
 	}
 
 	for _, rule := range opt.Rules {

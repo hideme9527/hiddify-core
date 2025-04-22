@@ -16,8 +16,7 @@ type HiddifyOptions struct {
 	Mode                    string `json:"mode"`
 	Node                    string `json:"node"`
 	ProxyRemote             string `json:"proxy-remote"`
-	RejectRemote            string `json:"reject-remote"`
-	DirectRemote            string `json:"direct-remote"`
+	ProxyLocal              string `json:"proxy-local"`
 	BlockAds                bool   `json:"block-ads"`
 	UseXrayCoreWhenPossible bool   `json:"use-xray-core-when-possible"`
 	// GeoIPPath        string      `json:"geoip-path"`
