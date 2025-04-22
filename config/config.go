@@ -586,7 +586,7 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 
 			//decodedURL, _ := url.QueryUnescape(opt.ProxyRemote)
 			rulesets = append(rulesets, option.RuleSet{
-				Type:   C.RuleSetTypeRemote,
+				Type:   C.RuleSetTypeLocal,
 				Tag:    "rule-set-proxy",
 				Format: C.RuleSetFormatBinary,
 				LocalOptions: option.LocalRuleSet{
