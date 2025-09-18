@@ -94,7 +94,7 @@ jobs:
         uses: nttld/setup-ndk@v1.4.0
         id: setup-ndk
         with:
-          ndk-version: r26b
+          ndk-version: r28c
           add-to-path: true
           local-cache: false
           link-to-sdk: true
