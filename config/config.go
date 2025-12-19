@@ -200,11 +200,21 @@ func setOutbounds(options *option.Options, input *option.Options, opt *HiddifyOp
 		}
 	}
 
+	var filteredTags []string
+
+	for _, tag := range tags {
+		// 2. 判断是否不包含 "group" 字符
+		// 如果你想忽略大小写，可以使用 strings.Contains(strings.ToLower(tag), "group")
+		if !strings.Contains(tag, "group") {
+			filteredTags = append(filteredTags, tag)
+		}
+	}
+
 	urlTest := option.Outbound{
 		Type: C.TypeURLTest,
 		Tag:  OutboundURLTestTag,
 		URLTestOptions: option.URLTestOutboundOptions{
-			Outbounds: tags,
+			Outbounds: filteredTags,
 			URL:       opt.ConnectionTestUrl,
 			Interval:  option.Duration(opt.URLTestInterval.Duration()),
 			// IdleTimeout: option.Duration(opt.URLTestIdleTimeout.Duration()),
@@ -213,17 +223,23 @@ func setOutbounds(options *option.Options, input *option.Options, opt *HiddifyOp
 			InterruptExistConnections: true,
 		},
 	}
+
+	udpOptions := &option.UDPOverTCPOptions{
+		Enabled: true,
+		Version: 2,
+	}
 	urlTestUdp := option.Outbound{
-		Type: C.TypeURLTest,
+		Type: C.TypeSOCKS,
 		Tag:  OutboundURLTestUDPTag,
-		URLTestOptions: option.URLTestOutboundOptions{
-			Outbounds: tagsUdp,
-			URL:       opt.ConnectionTestUrl,
-			Interval:  option.Duration(opt.URLTestInterval.Duration()),
-			// IdleTimeout: option.Duration(opt.URLTestIdleTimeout.Duration()),
-			Tolerance:                 1,
-			IdleTimeout:               option.Duration(opt.URLTestInterval.Duration().Nanoseconds() * 3),
-			InterruptExistConnections: true,
+		SocksOptions: option.SocksOutboundOptions{
+			DialerOptions: option.DialerOptions{
+				Detour: OutboundURLTestTag,
+			},
+			ServerOptions: option.ServerOptions{
+				Server:     "127.0.0.1",
+				ServerPort: 1080,
+			},
+			UDPOverTCP: udpOptions,
 		},
 	}
 
