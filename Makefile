@@ -32,6 +32,8 @@ headers:
 	go build -buildmode=c-archive -o $(BINDIR)/$(LIBNAME).h ./custom
 
 android: lib_install
+	export CGO_ENABLED=1
+	export CGO_LDFLAGS="-Wl,-z,max-page-size=16384"
 	gomobile bind -v -androidapi=21 -javapkg=io.nekohasekai -libname=box -tags=$(TAGS) -trimpath -target=android -o $(BINDIR)/$(LIBNAME).aar github.com/sagernet/sing-box/experimental/libbox ./mobile
 
 ios-full: lib_install
