@@ -43,7 +43,7 @@ jobs:
       matrix:
         job:
           - { name: 'hiddify-core-android', os: 'ubuntu-latest', target: 'android' }
-          - { name: "hiddify-core-ios", os: "macos-13", target: "ios" }
+          - { name: "hiddify-core-ios", os: "macos-15", target: "ios" }
           # - { name: 'hiddify-core-linux-amd64', os: 'ubuntu-22.04', target: 'linux-amd64' }
           # - { name: "hiddify-core-windows-amd64", os: 'ubuntu-latest', target: 'windows-amd64', aarch: 'x64' }
           # - { name: "hiddify-core-macos-universal", os: 'macos-13', target: 'macos-universal' }
