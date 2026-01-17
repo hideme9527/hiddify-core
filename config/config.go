@@ -614,33 +614,6 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 				//	DownloadDetour: OutboundDirectTag,
 				//},
 			})
-			routeRules = append(
-				routeRules,
-				option.Rule{
-					Type: C.RuleTypeDefault,
-					DefaultOptions: option.DefaultRule{
-						RuleSet:  option.Listable[string]{"rule-set-proxy"},
-						Network:  []string{"tcp"},
-						Outbound: opt.Node,
-					},
-				},
-			)
-			routeRules = append(
-				routeRules,
-				option.Rule{
-					Type: C.RuleTypeDefault,
-					DefaultOptions: option.DefaultRule{
-						RuleSet:  option.Listable[string]{"rule-set-proxy"},
-						Network:  []string{"udp"},
-						Outbound: opt.Node + "-udp",
-					},
-				},
-			)
-
-			dnsRules = append(dnsRules, option.DefaultDNSRule{
-				RuleSet: option.Listable[string]{"rule-set-proxy"},
-				Server:  DNSRemoteTag,
-			})
 		}
 
 	}
@@ -711,6 +684,40 @@ func setRoutingOptions(options *option.Options, opt *HiddifyOptions) {
 			dnsRule.Server = DNSRemoteTag
 		}
 		dnsRules = append(dnsRules, dnsRule)
+	}
+
+	// 将 rule-set-proxy 规则放在 opt.Rules 之后，确保 bypass 规则优先
+	if opt.Mode == "smart" && len(opt.ProxyLocal) > 0 {
+		routeRules = append(
+			routeRules,
+			option.Rule{
+				Type: C.RuleTypeDefault,
+				DefaultOptions: option.DefaultRule{
+					RuleSet:  option.Listable[string]{"rule-set-proxy"},
+					Network:  []string{"tcp"},
+					Outbound: opt.Node,
+				},
+			},
+		)
+		routeRules = append(
+			routeRules,
+			option.Rule{
+				Type: C.RuleTypeDefault,
+				DefaultOptions: option.DefaultRule{
+					RuleSet:  option.Listable[string]{"rule-set-proxy"},
+					Network:  []string{"udp"},
+					Outbound: opt.Node + "-udp",
+				},
+			},
+		)
+	}
+
+	// 将 rule-set-proxy DNS 规则放在 opt.Rules 之后，确保 dns-direct 规则优先
+	if opt.Mode == "smart" && len(opt.ProxyLocal) > 0 {
+		dnsRules = append(dnsRules, option.DefaultDNSRule{
+			RuleSet: option.Listable[string]{"rule-set-proxy"},
+			Server:  DNSRemoteTag,
+		})
 	}
 
 	parsedURL, err := url.Parse(opt.ConnectionTestUrl)
